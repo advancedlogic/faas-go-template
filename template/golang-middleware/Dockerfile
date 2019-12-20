@@ -2,7 +2,7 @@ FROM openfaas/of-watchdog:0.7.2 as watchdog
 
 FROM golang:1.13.1-alpine3.10 as build
 
-RUN apk --no-cache add git
+RUN apk --no-cache add git gcc libc-dev
 
 COPY --from=watchdog /fwatchdog /usr/bin/fwatchdog
 RUN chmod +x /usr/bin/fwatchdog
@@ -42,5 +42,7 @@ USER app
 ENV fprocess="./handler"
 ENV mode="http"
 ENV upstream_url="http://127.0.0.1:8082"
+
+HEALTHCHECK --interval=3s CMD [ -e /tmp/.lock ] || exit 1
 
 CMD ["./fwatchdog"]

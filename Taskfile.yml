@@ -1,0 +1,30 @@
+version: '2'
+
+tasks:
+    create:
+        cmds:
+            - faas-cli new --lang golang-middleware --gateway {{ .GATEWAY | default "localhost:8080" }} --prefix {{ .PREFIX | default "localhost:5000" }} {{ .NAME}}
+            - mv {{ .NAME }}.yml stack.yml
+            - mkdir src
+            - cp ./template/golang-middleware/main.go ./src
+            - sed -i 's/handler/./' ./src/main.go
+            - mv -r ./{{ .NAME }} ./src/function
+    run:
+        cmds:
+            - go run ./src/main.go
+    up:
+        cmds:
+            - rm ./{{ .NAME }}/*
+            - cp ./src/function/* ./{{ .NAME }}
+            - faas-cli up
+    build:
+        cmds:
+            - rm ./{{ .NAME }}/*
+            - cp ./src/function/* ./{{ .NAME }}
+            - faas-cli build
+    push:
+        cmds:
+            - faas-cli push
+    deploy:
+        cmds:
+            - faas-cli deploy

@@ -1,0 +1,10 @@
+version: 1.0
+provider:
+  name: openfaas
+  gateway: http://localhost:31112
+functions:
+  go-test:
+    lang: golang-middleware
+    handler: ./go-test
+    image: localhost:5000/go-test:latest
+
