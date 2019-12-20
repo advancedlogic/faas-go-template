@@ -1,0 +1,5 @@
+bin/
+src/
+Testfile.yml
+.gitignore
+.git
