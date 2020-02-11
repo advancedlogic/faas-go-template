@@ -6,20 +6,31 @@ tasks:
             - faas-cli new --lang golang-middleware --gateway {{ .GATEWAY | default "localhost:8080" }} --prefix {{ .PREFIX | default "localhost:5000" }} {{ .NAME}}
             - mv {{ .NAME }}.yml stack.yml
             - mkdir src
+            - mkdir src/function
             - cp ./template/golang-middleware/main.go ./src
             - sed -i 's/handler/./' ./src/main.go
-            - mv -r ./{{ .NAME }} ./src/function
+            - mv ./{{ .NAME }}/* ./src/function
+    clean:
+        cmds:
+            - rm -rf src
+            - rm -rf {{ .NAME }}
+            - rm stack.yml
+            - rm .gitignore
+            - rm -rf build
     run:
         cmds:
             - go run ./src/main.go
+    test:
+        cmds:
+            - go test ./src/function
     up:
         cmds:
-            - rm ./{{ .NAME }}/*
+            - rm -rf ./{{ .NAME }}/*
             - cp ./src/function/* ./{{ .NAME }}
             - faas-cli up
     build:
         cmds:
-            - rm ./{{ .NAME }}/*
+            - rm -rf ./{{ .NAME }}/*
             - cp ./src/function/* ./{{ .NAME }}
             - faas-cli build
     push:
